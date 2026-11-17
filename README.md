@@ -60,7 +60,7 @@ php artisan serve
 
 Mở `http://127.0.0.1:8000`. Apache của Laragon cũng có thể phục vụ dự án ở `http://huit-schedule.test`:
 
-1. Đưa file mẫu `config/laragon/huit-schedule.conf` vào `C:\laragon\etc\apache2\sites-enabled`.
+1. Sao chép file mẫu `config/laragon/huit-schedule.conf` thành `C:\laragon\etc\apache2\sites-enabled\huit-schedule.test.conf`. Nếu đã có `auto.huit-schedule.test.conf`, đổi tên file tự sinh thành `huit-schedule.test.conf` rồi thay nội dung bằng file mẫu để chỉ có một Virtual Host cho tên miền này.
 2. Sửa đường dẫn dự án và cổng Apache trong file mẫu cho khớp máy. `DocumentRoot` phải trỏ tới thư mục `public`. Bản mẫu thêm cổng 80 trên loopback cho máy dùng Apache cổng 8080. Nếu Apache đã lắng nghe cổng 80, bỏ dòng `Listen` trong file mẫu và dùng cổng đang có trong thẻ `VirtualHost`.
 3. Thêm dòng `127.0.0.1 huit-schedule.test` vào `C:\Windows\System32\drivers\etc\hosts` nếu Laragon chưa tạo. Bấm **Reload** ở hàng Apache trong Laragon rồi mở tên miền.
 4. Đặt `APP_URL` trong `.env` thành địa chỉ bạn dùng để chạy ứng dụng.
