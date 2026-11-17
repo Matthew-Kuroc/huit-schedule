@@ -1,58 +1,81 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# HUIT Schedule Hub
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Ứng dụng quản lý lịch giảng dạy đa cơ sở cho bài thực hành Lập trình mã nguồn mở. Dự án dùng Laravel 13, Blade, MySQL, Composer, phpdotenv và Faker.
 
-## About Laravel
+## Chức năng
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Quản trị viên xem, lọc, thêm, sửa và xóa lịch dạy. Máy chủ chặn lịch chồng tiết của giảng viên hoặc của cùng một phòng tại cùng cơ sở.
+- Form xếp lịch gợi ý giảng viên đúng chuyên môn, kiểm tra phòng và tìm các khung tiết khác cùng ngày. Hệ thống ưu tiên ít đổi cơ sở rồi ít tiết chờ. Hai lớp liền tiết ở hai cơ sở khác nhau không được gợi ý. Đây là quy tắc theo tiết, không tính thời gian di chuyển thực tế.
+- Giảng viên chỉ xem lịch của mình theo tuần hoặc tháng, kèm cơ sở, địa chỉ và phòng. Lịch lặp theo thứ trong tuần.
+- Biểu đồ của quản trị viên cộng số tiết dạy theo ngày trên toàn bộ kết quả lọc, gồm cả các lịch ở những trang sau.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Cài trên Laragon
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Cần PHP 8.4, Composer và MySQL. Mở MySQL trong Laragon, sau đó tạo database rỗng `huit_db` trong phpMyAdmin với collation `utf8mb4_unicode_ci`.
 
-## Learning Laravel
+Mở PowerShell tại thư mục chứa `artisan`:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```powershell
+composer install
+Copy-Item .env.example .env
+php artisan key:generate
+php artisan migrate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Lệnh sao chép và sinh khóa dành cho lần cài mới. Trong `.env`, dùng thông số MySQL trên máy của bạn:
 
-## Contributing
+```dotenv
+APP_URL=http://127.0.0.1:8000
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=huit_db
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Nếu MySQL yêu cầu mật khẩu, điền giá trị thực vào `DB_PASSWORD`. Laravel đọc `DB_DATABASE` làm tên database.
 
-## Code of Conduct
+### Nạp dữ liệu mẫu
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Sau khi chạy migration, chọn một cách cho database mới:
 
-## Security Vulnerabilities
+- **phpMyAdmin:** chọn database `huit_db` → **Import** → chọn `database/huit_demo.sql` → **Import**. File SQL chứa dữ liệu ba bảng nghiệp vụ và được dùng khi ba bảng đang trống.
+- **Artisan:** chạy `php artisan db:seed` để tạo cùng bộ dữ liệu bằng Laravel và Faker.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Bộ mẫu có 8 cơ sở, 48 giảng viên và 144 lịch dạy. Tài khoản đăng nhập được tạo riêng bằng hai lệnh sau. Số `1` là ID của giảng viên trong bảng `teachers`.
 
-## License
+```powershell
+php artisan schedule:create-admin admin@example.test --generate-password
+php artisan schedule:create-teacher 1 --generate-password
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Terminal hiển thị mật khẩu ngẫu nhiên vừa tạo. Bỏ tùy chọn `--generate-password` nếu muốn nhập mật khẩu của mình. Email giảng viên được lấy từ hồ sơ trong bảng `teachers`.
+
+### Mở website
+
+```powershell
+php artisan serve
+```
+
+Mở `http://127.0.0.1:8000`. Apache của Laragon cũng có thể phục vụ dự án ở `http://huit-schedule.test`:
+
+1. Đưa file mẫu `config/laragon/huit-schedule.conf` vào `C:\laragon\etc\apache2\sites-enabled`.
+2. Sửa đường dẫn dự án và cổng Apache trong file mẫu cho khớp máy. `DocumentRoot` phải trỏ tới thư mục `public`. Bản mẫu thêm cổng 80 trên loopback cho máy dùng Apache cổng 8080. Nếu Apache đã lắng nghe cổng 80, bỏ dòng `Listen` trong file mẫu và dùng cổng đang có trong thẻ `VirtualHost`.
+3. Thêm dòng `127.0.0.1 huit-schedule.test` vào `C:\Windows\System32\drivers\etc\hosts` nếu Laragon chưa tạo. Bấm **Reload** ở hàng Apache trong Laragon rồi mở tên miền.
+4. Đặt `APP_URL` trong `.env` thành địa chỉ bạn dùng để chạy ứng dụng.
+
+Giao diện sử dụng CSS và JavaScript trong `public/`, nên cài Composer là đủ để chạy bản này.
+
+## Kịch bản demo
+
+1. Đăng nhập admin và lọc lịch theo giảng viên hoặc cơ sở. Biểu đồ đổi theo bộ lọc.
+2. Thêm lịch vào thứ Hai, tiết 1 ở cơ sở Tân Phú. Chọn phòng **P99** và chuyên môn **Công nghệ phần mềm** để xem những giảng viên rảnh. Đổi sang **P01** để xem cảnh báo phòng đã có lớp và gợi ý khung tiết khác.
+3. Thử lưu lịch cho **Dương Tiến Đạt** vào thứ Hai, tiết 1 để minh họa kiểm tra trùng giảng viên tại máy chủ.
+4. Đăng nhập bằng tài khoản giảng viên và chuyển giữa **Theo tuần** và **Theo tháng**.
+
+## Kiểm tra cú pháp và giấy phép
+
+GitHub Actions chạy `php -l` trên các file PHP trong Git mỗi lần push và khi có pull request. Xem kết quả ở tab **Actions**.
+
+Dự án dùng giấy phép [MIT](LICENSE).
