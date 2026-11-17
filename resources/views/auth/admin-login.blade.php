@@ -20,6 +20,7 @@
                 @error('password')<p class="field-error" id="password-error" role="alert">{{ $message }}</p>@enderror
             </div>
             <button class="button button-primary" type="submit">Đăng nhập</button>
+            <a class="back-link" href="{{ route('password.request') }}">Quên mật khẩu?</a>
         </form>
     </section>
 @endsection

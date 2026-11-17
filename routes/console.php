@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Services\TeacherAccounts;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -35,6 +36,9 @@ Artisan::command('schedule:create-admin {email} {--generate-password}', function
 
     $user = new User(['name' => 'Quản trị viên', 'email' => $email, 'password' => $password]);
     $user->is_admin = true;
+    if ($this->option('generate-password')) {
+        $user->password_state = User::PASSWORD_TEMPORARY;
+    }
     $user->save();
 
     $this->info('Đã tạo tài khoản quản trị.');
@@ -69,6 +73,7 @@ Artisan::command('schedule:create-teacher {teacher} {--generate-password}', func
 
     $user = new User(['name' => $teacher->full_name, 'email' => $teacher->email, 'password' => $password]);
     $user->teacher_id = $teacher->id;
+    $user->password_state = User::PASSWORD_TEMPORARY;
     $user->save();
 
     $this->info("Đã tạo tài khoản giảng viên $teacher->email.");
@@ -78,3 +83,25 @@ Artisan::command('schedule:create-teacher {teacher} {--generate-password}', func
 
     return 0;
 })->purpose('Tạo tài khoản đăng nhập cho một giảng viên theo ID');
+
+Artisan::command('schedule:provision-teachers', function (TeacherAccounts $accounts): int {
+    $created = 0;
+    $existing = 0;
+    $conflicts = 0;
+
+    foreach (DB::table('teachers')->select('id')->lazyById() as $teacher) {
+        $result = $accounts->provision($teacher->id);
+        if ($result === true) {
+            $created++;
+        } elseif ($result === false) {
+            $existing++;
+        } else {
+            $conflicts++;
+            $this->warn("Giảng viên ID $teacher->id có email đã được sử dụng.");
+        }
+    }
+
+    $this->info("Đã tạo $created tài khoản, giữ $existing tài khoản hiện có, $conflicts email trùng.");
+
+    return $conflicts === 0 ? 0 : 1;
+})->purpose('Chuẩn bị tài khoản cho các giảng viên chưa có tài khoản');

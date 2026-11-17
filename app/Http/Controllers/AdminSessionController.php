@@ -26,11 +26,13 @@ class AdminSessionController extends Controller
             'password.required' => 'Hãy nhập mật khẩu.',
         ]);
 
-        if (! Auth::attemptWhen($credentials, fn (User $user): bool => $user->is_admin || $user->teacher_id !== null)) {
+        if (! Auth::attemptWhen($credentials, fn (User $user): bool => $user->password_state !== User::PASSWORD_UNISSUED && ($user->is_admin || $user->teacher_id !== null)
+        )) {
             return back()->withErrors(['email' => 'Email hoặc mật khẩu chưa đúng.'])->onlyInput('email');
         }
 
         $request->session()->regenerate();
+        $request->session()->put('password_hash_web', Auth::guard('web')->hashPasswordForCookie($request->user()->getAuthPassword()));
 
         $request->session()->forget('url.intended');
 

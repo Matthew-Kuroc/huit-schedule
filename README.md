@@ -6,7 +6,7 @@
 
 - Quản trị viên xem, lọc, thêm, sửa và xóa lịch dạy. Máy chủ chặn lịch chồng tiết của giảng viên hoặc của cùng một phòng tại cùng cơ sở.
 - Form xếp lịch gợi ý giảng viên đúng chuyên môn, kiểm tra phòng và tìm các khung tiết khác cùng ngày. Hệ thống ưu tiên ít đổi cơ sở rồi ít tiết chờ. Hai lớp liền tiết ở hai cơ sở khác nhau không được gợi ý. Đây là quy tắc theo tiết, không tính thời gian di chuyển thực tế.
-- Giảng viên chỉ xem lịch của mình theo tuần hoặc tháng, kèm cơ sở, địa chỉ và phòng. Lịch lặp theo thứ trong tuần.
+- Giảng viên xem lịch cá nhân theo lưới tuần hoặc tháng, bấm vào từng buổi để xem phòng, cơ sở và địa chỉ. Lịch lặp theo thứ trong tuần.
 - Biểu đồ của quản trị viên cộng số tiết dạy theo ngày trên toàn bộ kết quả lọc, gồm cả các lịch ở những trang sau.
 
 ## Cài trên Laragon
@@ -18,11 +18,9 @@ Mở PowerShell tại thư mục chứa `artisan`:
 ```powershell
 composer install
 Copy-Item .env.example .env
-php artisan key:generate
-php artisan migrate
 ```
 
-Lệnh sao chép và sinh khóa dành cho lần cài mới. Trong `.env`, dùng thông số MySQL trên máy của bạn:
+Chỉ sao chép `.env.example` khi cài mới. Trong `.env`, điền thông số MySQL trên máy của bạn:
 
 ```dotenv
 APP_URL=http://127.0.0.1:8000
@@ -36,6 +34,13 @@ DB_PASSWORD=
 
 Nếu MySQL yêu cầu mật khẩu, điền giá trị thực vào `DB_PASSWORD`. Laravel đọc `DB_DATABASE` làm tên database.
 
+Sau khi lưu `.env`, tạo khóa cho lần cài mới và chạy migration:
+
+```powershell
+php artisan key:generate
+php artisan migrate
+```
+
 ### Nạp dữ liệu mẫu
 
 Sau khi chạy migration, chọn một cách cho database mới:
@@ -43,14 +48,14 @@ Sau khi chạy migration, chọn một cách cho database mới:
 - **phpMyAdmin:** chọn database `huit_db` → **Import** → chọn `database/huit_demo.sql` → **Import**. File SQL chứa dữ liệu ba bảng nghiệp vụ và được dùng khi ba bảng đang trống.
 - **Artisan:** chạy `php artisan db:seed` để tạo cùng bộ dữ liệu bằng Laravel và Faker.
 
-Bộ mẫu có 8 cơ sở, 48 giảng viên và 144 lịch dạy. Tài khoản đăng nhập được tạo riêng bằng hai lệnh sau. Số `1` là ID của giảng viên trong bảng `teachers`.
+Bộ mẫu có 8 cơ sở, 48 giảng viên và 144 lịch dạy. Chuẩn bị tài khoản quản trị và tạo tài khoản cho tất cả giảng viên:
 
 ```powershell
 php artisan schedule:create-admin admin@example.test --generate-password
-php artisan schedule:create-teacher 1 --generate-password
+php artisan schedule:provision-teachers
 ```
 
-Terminal hiển thị mật khẩu ngẫu nhiên vừa tạo. Bỏ tùy chọn `--generate-password` nếu muốn nhập mật khẩu của mình. Email giảng viên được lấy từ hồ sơ trong bảng `teachers`.
+Terminal hiển thị mật khẩu tạm của admin. Sau khi đăng nhập và đổi mật khẩu, mở **Giảng viên** trong thanh điều hướng để đặt mật khẩu tạm cho từng tài khoản. Lệnh cấp hàng loạt giữ nguyên các tài khoản đang có. Tài khoản mới ở trạng thái **Chờ cấp mật khẩu** cho đến khi admin đặt mật khẩu tạm. Giảng viên sử dụng email trên hồ sơ và tự đặt mật khẩu mới sau lần đăng nhập đầu tiên.
 
 ### Mở website
 
@@ -66,6 +71,13 @@ Mở `http://127.0.0.1:8000`. Apache của Laragon cũng có thể phục vụ d
 4. Đặt `APP_URL` trong `.env` thành địa chỉ bạn dùng để chạy ứng dụng.
 
 Giao diện sử dụng CSS và JavaScript trong `public/`, nên cài Composer là đủ để chạy bản này.
+
+### Demo mật khẩu với Mailpit
+
+Bật Mailpit trong Laragon. File `.env.example` cấu hình SMTP `127.0.0.1:1025`. Mở hộp thư Mailpit tại `http://127.0.0.1:8025`.
+
+- **Đổi mật khẩu** có trong thanh điều hướng sau khi đăng nhập. Nhập mật khẩu hiện tại để xác minh, sau đó nhập mật khẩu mới. Mailpit nhận thư thông báo sau khi lưu.
+- **Quên mật khẩu?** có ở trang đăng nhập. Nhập email của tài khoản đã được cấp mật khẩu rồi mở thư **Đặt lại mật khẩu HUIT Schedule Hub** trong Mailpit. Liên kết dùng một lần và hết hạn sau 60 phút.
 
 ## Kịch bản demo
 

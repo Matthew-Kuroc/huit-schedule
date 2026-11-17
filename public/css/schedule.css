@@ -79,6 +79,10 @@ button, input, select { font: inherit; }
 .button-quiet:hover { background: var(--canvas); }
 .topbar .button-quiet { color: var(--surface); }
 .topbar .button-quiet:hover { background: #28465d; }
+.topbar .button-quiet[aria-current="page"] { background: #28465d; }
+.account-nav { justify-content: flex-end; }
+.teacher-search { display: flex; flex-wrap: wrap; align-items: end; gap: .8rem; }
+.teacher-search .field { flex: 1 1 16rem; }
 .button.danger-text { color: var(--danger); }
 .button.danger-text:hover { background: var(--danger-soft); }
 .button-danger { background: var(--danger); color: var(--surface); }
@@ -142,20 +146,13 @@ button, input, select { font: inherit; }
 .bar-track { background: var(--canvas); height: .6rem; border-radius: 99px; overflow: hidden; }
 .bar-track > span { display: block; width: var(--filled); height: 100%; background: var(--accent); border-radius: inherit; }
 
-.calendar-note { padding: 0 1.1rem .8rem; font-size: .9rem; }
-.agenda-day { border-top: 1px solid var(--line); padding: 1rem 1.1rem; }
-.agenda-day h3 { display: flex; align-items: center; flex-wrap: wrap; gap: .45rem; margin: 0 0 .45rem; font-size: 1rem; }
-.agenda-day h3 time { color: var(--muted); font-weight: 500; }
-.agenda-day h3 .period, .agenda-lessons .period { margin-top: 0; }
-.agenda-lessons { list-style: none; padding: 0; margin: 0; display: grid; gap: .45rem; }
-.agenda-lessons li { display: flex; align-items: start; gap: .7rem; padding: .6rem; background: var(--canvas); border-radius: 6px; }
-.agenda-lessons p { font-size: .9rem; }
-
 @media (min-width: 64rem) {
     .filters { grid-template-columns: 1.3fr 1.1fr 1.1fr .75fr auto; }
 }
 
 @media (max-width: 47.99rem) {
+    .topbar-inner { flex-wrap: wrap; padding-block: .45rem; }
+    .account-nav { justify-content: flex-start; }
     .schedule-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
     .schedule-table table, .schedule-table tbody, .schedule-table tr { display: block; }
     .schedule-table tr { padding: .75rem 1.1rem; border-top: 1px solid var(--line); }
@@ -163,6 +160,7 @@ button, input, select { font: inherit; }
     .schedule-table td:first-child { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
     .schedule-table td:first-child .period { margin: 0; }
     .schedule-table td:nth-child(3)::before { content: "Giảng viên · "; color: var(--muted); }
+    .teacher-table td:nth-child(3)::before { content: none; }
 }
 
 @media (max-width: 29rem) {

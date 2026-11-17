@@ -17,6 +17,12 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    public const PASSWORD_ACTIVE = 'active';
+
+    public const PASSWORD_UNISSUED = 'unissued';
+
+    public const PASSWORD_TEMPORARY = 'temporary';
+
     /**
      * Get the attributes that should be cast.
      *

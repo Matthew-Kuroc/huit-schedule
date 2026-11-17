@@ -132,7 +132,7 @@ class ScheduleDemoSeeder extends Seeder
 
         return array_map(static fn (string $name): array => [
             'full_name' => $name,
-            'email' => Str::slug($name, '', 'vi').'@mail.com',
+            'email' => Str::slug($name, '', 'vi').'@gmail.com',
         ], $names);
     }
 }
